@@ -1,0 +1,171 @@
+<!-- CSS -->
+<link rel="stylesheet" href="~/assets/plugins/select2/select2.min.css">
+
+
+<!-- PAGE-HEADER -->
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Calendar</h1>
+  </div>
+  <div class="ms-auto pageheader-btn">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="javascript:void(0);">Apps</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Calendar</li>
+    </ol>
+  </div>
+</div>
+<!-- PAGE-HEADER END -->
+
+<!-- ROW OPEN -->
+<div class="row">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Calendar - Medical Appointments</h3>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-12 col-xl-9">
+            <div id="calendar"></div>
+          </div>
+          <div class="col-md-12 col-xl-3">
+            <div id="custom-events" class="mt-6">
+              <form>
+                <h4>Book Appointment</h4>
+                <label class="mt-3">Appointment Date:</label>
+                <div class="mg-b-30 mb-3">
+                  <div class="input-group">
+                    <div id="datePickerStyle1" class="input-group date" data-date-format="mm-dd-yyyy">
+                      <span class="input-group-addon input-group-text bg-primary-transparent">
+                        <i class="fe fe-calendar text-primary-dark"></i>
+                      </span>
+                      <input class="form-control" id="appointmentDate" type="text" placeholder="DD/MM/YYYY"/>
+                    </div>
+                  </div>
+                </div>
+                <label>Doctor:</label>
+                <div class="mg-b-30 mb-3">
+                  <div class="form-group">
+                    <select class="form-control select2" id="doctorSelect" data-placeholder="Choose Doctor..." tabindex="-1" aria-hidden="true">
+                      <option label="Choose one"></option>
+                      <option value="Dr. John Doe">Dr. John Doe</option>
+                      <option value="Dr. Jane Smith">Dr. Jane Smith</option>
+                      <option value="Dr. Michael Johnson">Dr. Michael Johnson</option>
+                      <!-- Add more doctor options here -->
+                    </select>
+                  </div>
+                </div>
+                <div class="wd-150 mg-b-30 ce-btn-group my-1">
+                  <button class="btn btn-primary" id="btnBookAppointment">Book Appointment</button>
+                  <button class="btn btn-secondary" id="btnReset">Reset</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ROW CLOSED -->
+
+<!-- Modal -->
+<div class="modal fade" id="appointmentModal" tabindex="-1" role="dialog" aria-labelledby="appointmentModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="appointmentModalLabel">Book Appointment</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p id="modalAppointmentDate"></p>
+        <p id="modalDoctor"></p>
+        <!-- Add more fields for the appointment details -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <!-- Add button(s) for saving the appointment -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript -->
+<script src="~/assets/plugins/select2/select2.min.js"></script>
+<script src="~/assets/plugins/bootstrap-datepicker/js/datepicker.js"></script>
+<script src="~/assets/js/fullcalendar/moment.min.js"></script>
+<script src="~/assets/js/fullcalendar.js"></script>
+<script>
+  $(document).ready(function() {
+    // Initialize select2 plugin
+    $('.select2').select2();
+
+    // Initialize datepicker
+    $('#datePickerStyle1').datepicker();
+
+    // Initialize FullCalendar
+    $('#calendar').fullCalendar({
+      // Configure FullCalendar options and callbacks
+      // ...
+
+      // Example event for testing
+      events: [
+        {
+          title: 'Dr. John Doe',
+          start: '2023-06-24',
+          end: '2023-06-25',
+          // Add more event properties if needed
+        }
+      ],
+
+      // Handle click on calendar events
+      eventClick: function(calEvent, jsEvent, view) {
+        // Open the appointment modal
+        openAppointmentModal(calEvent);
+      }
+    });
+
+    // Handle "Book Appointment" button click
+    $('#btnBookAppointment').click(function(e) {
+      e.preventDefault();
+      
+      // Retrieve appointment details from the form
+      var appointmentDate = $('#appointmentDate').val();
+      var selectedDoctor = $('#doctorSelect').val();
+
+      // Create a new event object
+      var newEvent = {
+        title: selectedDoctor,
+        start: appointmentDate,
+        // Add more event properties if needed
+      };
+
+      // Add the new event to the calendar
+      $('#calendar').fullCalendar('renderEvent', newEvent);
+
+      // Clear the form fields
+      $('#appointmentDate').val('');
+      $('#doctorSelect').val('').trigger('change');
+    });
+
+    // Reset button click handler
+    $('#btnReset').click(function(e) {
+      e.preventDefault();
+
+      // Clear the form fields
+      $('#appointmentDate').val('');
+      $('#doctorSelect').val('').trigger('change');
+    });
+
+    // Function to open the appointment modal and populate it with data
+    function openAppointmentModal(event) {
+      $('#modalAppointmentDate').text('Appointment Date: ' + event.start.format('DD/MM/YYYY'));
+      $('#modalDoctor').text('Doctor: ' + event.title);
+
+      // Open the appointment modal
+      $('#appointmentModal').modal('show');
+    }
+  });
+</script>
